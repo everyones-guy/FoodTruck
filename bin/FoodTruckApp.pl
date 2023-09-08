@@ -29,7 +29,7 @@ if ($response->is_success) {
 
         # Test if we're displaying the correct data		
 		if( $truck->{'status'} =~ /approved/i){
-			say $truck->display_info() . "\n\n";
+			print $truck->display_info();
 		}
 	}	
 } else {
