@@ -2,9 +2,10 @@ use strict;
 use warnings;
 use lib '../lib';
 use FoodTruck;
+use FoodTruckDB;
 use JSON;           
 use LWP::UserAgent;
-
+use DBI;
 use Data::Dumper;
 
 # Setup endpoint to grab json Data
@@ -35,6 +36,10 @@ if ($response->is_success) {
 } else {
     die "Failed to retrieve data from the API: " . $response->status_line;
 }
+
+my $db_file = 'food_truck.db';
+my $dbh = DBI->connect("dbi:SQLite:dbname=$db_file", "", "");
+
 
 =pod
 We have our data, now it is time to do something fun with it. 

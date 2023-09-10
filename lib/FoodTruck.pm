@@ -3,84 +3,72 @@ package FoodTruck;
 use strict;
 use warnings;
 
+# Constructor for creating a new FoodTruck object
 sub new {
     my ($class, %args) = @_;
+
     my $self = {
-        objectid           => $args{objectid},
-        applicant          => $args{applicant},
-        facilitytype       => $args{facilitytype},
-        locationdescription => $args{locationdescription},
-        address            => $args{address},
-        latitude           => $args{latitude},
-        longitude          => $args{longitude},
-        permit             => $args{permit},
-        status             => $args{status},
+        name    => $args{name}    || '',
+        address => $args{address} || '',
+        type    => $args{type}    || '',
+        price   => $args{price}   || 0.00,
+        reviews => $args{reviews} || '',
     };
+
     bless($self, $class);
     return $self;
 }
 
-# accessors
-sub objectid {
+# Getter methods for accessing object attributes
+sub get_name {
     my ($self) = @_;
-    return $self->{objectid};
+    return $self->{name};
 }
 
-sub applicant {
-    my ($self) = @_;
-    return $self->{applicant};
-}
-
-sub facilitytype {
-    my ($self) = @_;
-    return $self->{facilitytype};
-}
-
-sub locationdescription {
-    my ($self) = @_;
-    return $self->{locationdescription};
-}
-
-sub address {
+sub get_address {
     my ($self) = @_;
     return $self->{address};
 }
 
-sub latitude {
+sub get_type {
     my ($self) = @_;
-    return $self->{latitude};
+    return $self->{type};
 }
 
-sub longitude {
+sub get_price {
     my ($self) = @_;
-    return $self->{longitude};
+    return $self->{price};
 }
 
-sub permit {
+sub get_reviews {
     my ($self) = @_;
-    return $self->{permit};
+    return $self->{reviews};
 }
 
-sub status {
-    my ($self) = @_;
-    return $self->{status};
+# Setter methods for updating object attributes
+sub set_name {
+    my ($self, $name) = @_;
+    $self->{name} = $name;
 }
 
-sub display_info {
-    my ($self) = @_;
-    my $info = "";
-
-    foreach my $property (sort keys %$self) {
-        my $value = $self->{$property};
-        if (defined $value) {
-            $info .= "$property: $value\n";
-        } else {
-            $info .= "Warning: Missing Property: '$property' at " . __PACKAGE__ . " Line " . __LINE__ . "\n";
-        }
-    }
-
-    return $info;
+sub set_address {
+    my ($self, $address) = @_;
+    $self->{address} = $address;
 }
 
+sub set_type {
+    my ($self, $type) = @_;
+    $self->{type} = $type;
+}
+
+sub set_price {
+    my ($self, $price) = @_;
+    $self->{price} = $price;
+}
+
+sub set_reviews {
+    my ($self, $reviews) = @_;
+    $self->{reviews} = $reviews;
+}
 
 1;
