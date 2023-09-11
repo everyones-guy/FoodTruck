@@ -28,12 +28,14 @@ if ($response->is_success) {
     my $user_input = <STDIN>;
     chomp $user_input;
  
+    # ... (previous code)
+
     if (lc($user_input) eq 'yes') {
         # Create a FoodTruckDB object to establish a database connection
         my $db = FoodTruckDB->new;
 
-        # Fill our database with the data from the API call
-        $db->populate_database(@$trucks);  # Pass the $trucks array to the method
+        # Fill our database with the data from the API call and capture inserted objectids
+        my $inserted_ids_ref = $db->populate_database(@$trucks);
 
         # Get a random certified and licensed food truck
         my $food_truck = $db->get_random_food_truck();
@@ -47,6 +49,10 @@ if ($response->is_success) {
         } else {
             print "No certified and licensed food trucks found in the database.\n";
         }
+
+        # You can now use $inserted_ids_ref to query specific records if needed
+        # Example: Fetch data for a specific objectid
+        my $specific_food_truck = $db->get_food_truck_by_objectid($inserted_ids_ref->[0]);
 
         # Disconnect from the database
         $db->DESTROY;

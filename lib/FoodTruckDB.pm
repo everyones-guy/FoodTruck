@@ -34,6 +34,8 @@ sub populate_database {
 
     my $sth = $self->{dbh}->prepare($insert_sql);
 
+    my @inserted_ids;  # Array to store inserted objectids
+
     foreach my $truck_data (@truck_data) {
         $sth->execute(
             $truck_data->{objectid},
@@ -46,8 +48,12 @@ sub populate_database {
             $truck_data->{permit},
             $truck_data->{status}
         );
+
+        # Store the inserted objectid in the array
+        push @inserted_ids, $truck_data->{objectid};
     }
-    return;
+
+    return \@inserted_ids;  # Return a reference to the inserted objectids
 }
 
 # Retrieve a random food truck from the database

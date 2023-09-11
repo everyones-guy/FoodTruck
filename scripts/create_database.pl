@@ -4,13 +4,13 @@ use DBI;
 use Getopt::Long;
 
 # Default values for options
-my $db_file   = 'food_truck.db';  # Default database name
-my $db_dir    = '.';              # Default database location
+my $db_file = 'food_trucks.db';    # Default database name
+my $db_dir  = '../data';                   # Default database location
 
 # Parse command-line options
 GetOptions(
-    'database=s' => \$db_file,  # Database name (string)
-    'location=s' => \$db_dir,   # Database location (directory)
+    'database=s' => \$db_file,   # Database name (string)
+    'location=s' => \$db_dir,    # Database location (directory)
 ) or die "Usage: $0 [--database=NAME] [--location=DIR]\n";
 
 # Construct the full path to the database file
@@ -32,12 +32,15 @@ my $dbh = DBI->connect($db_dsn, $db_user, $db_pass, {
 # SQL statement to create the food_trucks table
 my $create_table_sql = <<SQL;
 CREATE TABLE IF NOT EXISTS food_trucks (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
+    objectid INTEGER PRIMARY KEY,
+    applicant TEXT,
+    facilitytype TEXT,
+    locationdescription TEXT,
     address TEXT,
-    type TEXT,
-    price DECIMAL(8, 2),
-    reviews TEXT
+    latitude DECIMAL(8, 6),
+    longitude DECIMAL(9, 6),
+    permit TEXT,
+    status TEXT
 );
 SQL
 
