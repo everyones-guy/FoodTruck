@@ -55,24 +55,36 @@ SQL
     my @inserted_ids;  # Array to store inserted objectids
 
     foreach my $truck_data (@truck_data) {
-        $sth->execute(
-            $truck_data->{objectid},
-            $truck_data->{applicant},
-            $truck_data->{facilitytype},
-            $truck_data->{locationdescription},
-            $truck_data->{address},
-            $truck_data->{latitude},
-            $truck_data->{longitude},
-            $truck_data->{permit},
-            $truck_data->{status}
-        );
+        my $objectid = $truck_data->{objectid};
 
-        # Store the inserted objectid in the array
-        push @inserted_ids, $truck_data->{objectid};
+        # Check if the objectid already exists
+        my $check_sql = "SELECT COUNT(*) FROM food_trucks WHERE objectid = ?";
+        my $count = $self->{dbh}->selectrow_array($check_sql, undef, $objectid);
+
+        if ($count == 0) {
+            # Insert only if the objectid is not already in the table
+            $sth->execute(
+                $objectid,
+                $truck_data->{applicant},
+                $truck_data->{facilitytype},
+                $truck_data->{locationdescription},
+                $truck_data->{address},
+                $truck_data->{latitude},
+                $truck_data->{longitude},
+                $truck_data->{permit},
+                $truck_data->{status}
+            );
+
+            # Store the inserted objectid in the array
+            push @inserted_ids, $objectid;
+        } else {
+            warn "Skipping duplicate objectid: $objectid\n";
+        }
     }
 
     return \@inserted_ids;  # Return a reference to the inserted objectids
 }
+
 
 # Retrieve a random food truck from the database
 sub get_random_food_truck {
