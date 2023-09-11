@@ -23,35 +23,36 @@ if ($response->is_success) {
     # Parse the JSON data
     my $trucks = decode_json($json_data);
 
-    # Create a FoodTruckDB object to establish a database connection
-    my $db = FoodTruckDB->new;
+    # Prompt the user to select a certified and licensed food truck
+    print "Would you like to select a random certified and licensed food truck to visit (Yes/No)? ";
+    my $user_input = <STDIN>;
+    chomp $user_input;
+ 
+    if (lc($user_input) eq 'yes') {
+        # Create a FoodTruckDB object to establish a database connection
+        my $db = FoodTruckDB->new;
 
-    foreach my $truck_data (@$trucks) {
-        my $truck = FoodTruck->new(%$truck_data);
+        # Fill our database with the data from the API call
+        $db->populate_database(@$trucks);  # Pass the $trucks array to the method
 
-        # Test if the truck has an approved status
-        if ($truck->get_status() && $truck->get_status() =~ /approved/i) {
+        # Get a random certified and licensed food truck
+        my $food_truck = $db->get_random_food_truck();
+
+        if ($food_truck) {
+            # Create a FoodTruck object from the retrieved data
+            my $truck = FoodTruck->new(%$food_truck);
+        
+            # Display the selected food truck
             print $truck->display_info();
-            
-            # Insert the FoodTruck object into the database
-            $db->insert_food_truck(
-                $truck->get_objectid(),
-                $truck->get_applicant(),
-                $truck->get_facilitytype(),
-                $truck->get_locationdescription(),
-                $truck->get_address(),
-                $truck->get_latitude(),
-                $truck->get_longitude(),
-                $truck->get_permit(),
-                $truck->get_status()
-            );
+        } else {
+            print "No certified and licensed food trucks found in the database.\n";
         }
-    }
 
-    # Disconnect from the database
-    $db->DESTROY;
+        # Disconnect from the database
+        $db->DESTROY;
+    } else {
+        print "You chose not to select a food truck.\n";
+    }
 } else {
     die "Failed to retrieve data from the API: " . $response->status_line;
 }
-
-# Rest of your script remains the same

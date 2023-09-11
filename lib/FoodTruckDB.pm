@@ -6,45 +6,58 @@ use DBI;
 
 # Constructor for initializing the database connection
 sub new {
-    my ($class) = @_;
+    my ($class, %args) = @_;
 
     my $self = {
-        db_file => '../data/food_truck.db',
+        db_file => $args{db_file} || '../data/food_truck.db',
         dbh     => undef,  # Database handle
     };
 
     # Connect to the database
-    $self->{dbh} = DBI->connect("dbi:SQLite:dbname=$self->{db_file}", "", "");
-    die "Database connection failed: " . $DBI::errstr unless $self->{dbh};
+    $self->{dbh} = DBI->connect("dbi:SQLite:dbname=$self->{db_file}", "", "", {
+        RaiseError => 1,  # Automatically raise errors
+        AutoCommit => 1,  # Enable auto-commit
+    });
 
     bless($self, $class);
     return $self;
 }
 
-# Insert a food truck into the database
-sub insert_food_truck {
-    my ($self, $name, $address, $type, $price, $reviews) = @_;
+# Populate the database with food truck data from an array of data
+sub populate_database {
+    my ($self, @truck_data) = @_;
 
     my $insert_sql = "
-        INSERT INTO food_trucks (name, address, type, price, reviews)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO food_trucks (objectid, applicant, facilitytype, locationdescription, address, latitude, longitude, permit, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
-	
-    $self->{dbh}->do($insert_sql, undef, $name, $address, $type, $price, $reviews);
-	return;
+
+    my $sth = $self->{dbh}->prepare($insert_sql);
+
+    foreach my $truck_data (@truck_data) {
+        $sth->execute(
+            $truck_data->{objectid},
+            $truck_data->{applicant},
+            $truck_data->{facilitytype},
+            $truck_data->{locationdescription},
+            $truck_data->{address},
+            $truck_data->{latitude},
+            $truck_data->{longitude},
+            $truck_data->{permit},
+            $truck_data->{status}
+        );
+    }
+    return;
 }
 
-# Retrieve a random food truck based on user's location
+# Retrieve a random food truck from the database
 sub get_random_food_truck {
-    my ($self, $user_lat, $user_lon) = @_;
+    my ($self) = @_;
 
-    # Implement logic to calculate distances and select a random food truck
-    # You can use the Haversine formula or other methods here.
-
-    # Example: selecting a random food truck for demonstration purposes
     my $select_random_sql = "
-        SELECT name, address, type, price, reviews
+        SELECT objectid, applicant, facilitytype, locationdescription, address, latitude, longitude, permit, status
         FROM food_trucks
+        WHERE status = 'APPROVED'
         ORDER BY RANDOM()
         LIMIT 1
     ";
@@ -62,7 +75,7 @@ sub DESTROY {
     if ($self->{dbh}) {
         $self->{dbh}->disconnect();
     }
-	return;
+    return;
 }
 
 1;
