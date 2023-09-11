@@ -3,13 +3,14 @@ package FoodTruckDB;
 use strict;
 use warnings;
 use DBI;
+use Data::Dumper;
 
 # Constructor for initializing the database connection
 sub new {
     my ($class, %args) = @_;
 
     my $self = {
-        db_file => $args{db_file} || '../data/food_truck.db',
+        db_file => $args{db_file} || '../data/food_trucks.db',
         dbh     => undef,  # Database handle
     };
 
@@ -27,10 +28,27 @@ sub new {
 sub populate_database {
     my ($self, @truck_data) = @_;
 
-    my $insert_sql = "
+    # SQL statement to create the food_trucks table
+    my $create_table_sql = <<SQL;
+    CREATE TABLE IF NOT EXISTS food_trucks (
+        objectid INTEGER PRIMARY KEY,
+        applicant TEXT,
+        facilitytype TEXT,
+        locationdescription TEXT,
+        address TEXT,
+        latitude DECIMAL(8, 6),
+        longitude DECIMAL(9, 6),
+        permit TEXT,
+        status TEXT
+    );
+SQL
+
+    $self->{dbh}->do($create_table_sql);
+
+    my $insert_sql = <<SQL;
         INSERT INTO food_trucks (objectid, applicant, facilitytype, locationdescription, address, latitude, longitude, permit, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ";
+SQL
 
     my $sth = $self->{dbh}->prepare($insert_sql);
 
@@ -70,6 +88,20 @@ sub get_random_food_truck {
 
     my $sth = $self->{dbh}->prepare($select_random_sql);
     $sth->execute();
+
+    return $sth->fetchrow_hashref();
+}
+
+sub get_food_truck_by_objectid {
+    my ($self, $objectid) = @_;
+
+    my $sql = "SELECT * FROM food_trucks WHERE objectid = ?";
+    my $sth = $self->{dbh}->prepare($sql);
+    $sth->execute($objectid);
+
+    my $food_truck = $sth->fetchrow_hashref;
+
+    $sth->finish;
 
     return $sth->fetchrow_hashref();
 }

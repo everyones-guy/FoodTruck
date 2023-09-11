@@ -52,7 +52,7 @@ if ($response->is_success) {
 
         # You can now use $inserted_ids_ref to query specific records if needed
         # Example: Fetch data for a specific objectid
-        my $specific_food_truck = $db->get_food_truck_by_objectid($inserted_ids_ref->[0]);
+        my $specific_food_truck = $db->get_food_truck_by_objectid('1660843'); # can be a menu option or whatever...just want to verify i can search
 
         # Disconnect from the database
         $db->DESTROY;

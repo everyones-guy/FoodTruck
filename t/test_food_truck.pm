@@ -1,36 +1,56 @@
 use strict;
 use warnings;
-use Test::More;
-use FoodTruckDB;
+use Test::More tests => 12;
 
-# Initialize the database for testing
-my $db = FoodTruckDB->new;
+# Load the FoodTruck module
+use FoodTruck;
 
-# Test inserting a food truck
-subtest 'Insert Food Truck' => sub {
-    my $name = 'Test Truck';
-    my $address = '123 Test St';
-    my $type = 'Test Cuisine';
-    my $price = 10.99;
-    my $reviews = 'Good food!';
+# Test data
+my %food_truck_data = (
+    objectid           => 1,
+    applicant          => 'Food Truck 1',
+    facilitytype       => 'Mobile Food Facility',
+    locationdescription => 'Downtown Square',
+    address            => '123 Main St',
+    latitude           => 37.123456,
+    longitude          => -121.654321,
+    permit             => '12345',
+    status             => 'Approved',
+);
 
-    $db->insert_food_truck($name, $address, $type, $price, $reviews);
+# Create a FoodTruck object
+my $food_truck = FoodTruck->new(%food_truck_data);
 
-    my $truck = $db->get_food_truck_by_name($name);
-    is($truck->{name}, $name, 'Name matches');
-    is($truck->{address}, $address, 'Address matches');
-    is($truck->{type}, $type, 'Type matches');
-    is($truck->{price}, $price, 'Price matches');
-    is($truck->{reviews}, $reviews, 'Reviews match');
-};
+# Test the constructor and getter methods
+is($food_truck->get_objectid, 1, 'get_objectid');
+is($food_truck->get_applicant, 'Food Truck 1', 'get_applicant');
+is($food_truck->get_facilitytype, 'Mobile Food Facility', 'get_facilitytype');
+is($food_truck->get_locationdescription, 'Downtown Square', 'get_locationdescription');
+is($food_truck->get_address, '123 Main St', 'get_address');
+is($food_truck->get_latitude, 37.123456, 'get_latitude');
+is($food_truck->get_longitude, -121.654321, 'get_longitude');
+is($food_truck->get_permit, '12345', 'get_permit');
+is($food_truck->get_status, 'Approved', 'get_status');
 
-# Test getting a random food truck
-subtest 'Get Random Food Truck' => sub {
-    my $truck = $db->get_random_food_truck();
-    ok($truck, 'Got a random food truck');
-};
+# Test setter methods
+$food_truck->set_objectid(2);
+$food_truck->set_applicant('Food Truck 2');
+$food_truck->set_facilitytype('Food Cart');
+$food_truck->set_locationdescription('City Park');
+$food_truck->set_address('456 Elm St');
+$food_truck->set_latitude(38.789012);
+$food_truck->set_longitude(-122.987654);
+$food_truck->set_permit('67890');
+$food_truck->set_status('Pending');
 
-# Clean up the database
-$db->DESTROY;
+is($food_truck->get_objectid, 2, 'set_objectid');
+is($food_truck->get_applicant, 'Food Truck 2', 'set_applicant');
+is($food_truck->get_facilitytype, 'Food Cart', 'set_facilitytype');
+is($food_truck->get_locationdescription, 'City Park', 'set_locationdescription');
+is($food_truck->get_address, '456 Elm St', 'set_address');
+is($food_truck->get_latitude, 38.789012, 'set_latitude');
+is($food_truck->get_longitude, -122.987654, 'set_longitude');
+is($food_truck->get_permit, '67890', 'set_permit');
+is($food_truck->get_status, 'Pending', 'set_status');
 
-done_testing;
+done_testing();
