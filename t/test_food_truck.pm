@@ -1,8 +1,7 @@
 use strict;
 use warnings;
 use Test::More tests => 12;
-
-# Load the FoodTruck module
+use lib '../lib';
 use FoodTruck;
 
 # Test data
@@ -19,7 +18,7 @@ my %food_truck_data = (
 );
 
 # Create a FoodTruck object
-my $food_truck = FoodTruck->new(%food_truck_data);
+my $food_truck = FoodTruck->new(%food_truck_data);  # Use FoodTruck module
 
 # Test the constructor and getter methods
 is($food_truck->get_objectid, 1, 'get_objectid');

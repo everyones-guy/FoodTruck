@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More tests => 8;
+use lib '../lib';
 use FoodTruckDB;
 
 # Create a FoodTruckDB object with a temporary database file
