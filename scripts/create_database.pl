@@ -5,12 +5,12 @@ use Getopt::Long;
 
 # Default values for options
 my $db_file = 'food_trucks.db';    # Default database name
-my $db_dir  = '../data';                   # Default database location
+my $db_dir  = '../data';           # Default database location
 
 # Parse command-line options
 GetOptions(
-    'database=s' => \$db_file,   # Database name (string)
-    'location=s' => \$db_dir,    # Database location (directory)
+    'database=s' => \$db_file,     # Database name (string)
+    'location=s' => \$db_dir,      # Database location (directory)
 ) or die "Usage: $0 [--database=NAME] [--location=DIR]\n";
 
 # Construct the full path to the database file
@@ -23,11 +23,14 @@ my $db_user   = '';
 my $db_pass   = '';
 
 # Create a database connection
-my $dbh = DBI->connect($db_dsn, $db_user, $db_pass, {
-    PrintError => 0,
-    RaiseError => 1,
-    AutoCommit => 1,
-}) or die "Database connection failed: $DBI::errstr";
+my $dbh = DBI->connect(
+    $db_dsn, $db_user, $db_pass,
+    {
+        PrintError => 0,
+        RaiseError => 1,
+        AutoCommit => 1,
+    }
+) or die "Database connection failed: $DBI::errstr";
 
 # SQL statement to create the food_trucks table
 my $create_table_sql = <<SQL;
