@@ -6,23 +6,56 @@ use warnings;
 # Constructor for creating a new FoodTruck object
 sub new {
     my ($class, %args) = @_;
-
     my $self = {
-        name    => $args{name}    || '',
-        address => $args{address} || '',
-        type    => $args{type}    || '',
-        price   => $args{price}   || 0.00,
-        reviews => $args{reviews} || '',
+        objectid           => $args{objectid},
+        applicant          => $args{applicant},
+        facilitytype       => $args{facilitytype},
+        locationdescription => $args{locationdescription},
+        address            => $args{address},
+        latitude           => $args{latitude},
+        longitude          => $args{longitude},
+        permit             => $args{permit},
+        status             => $args{status},
     };
-
     bless($self, $class);
     return $self;
 }
 
-# Getter methods for accessing object attributes
-sub get_name {
+sub display_info {
     my ($self) = @_;
-    return $self->{name};
+    my $info = "";
+
+    foreach my $property (sort keys %$self) {
+        my $value = $self->{$property};
+        if (defined $value) {
+            $info .= "$property: $value\n";
+        } else {
+            $info .= "Warning: Missing Property: '$property' at " . __PACKAGE__ . " Line " . __LINE__ . "\n";
+        }
+    }
+
+    return $info;
+}
+
+# Getter methods
+sub get_objectid {
+    my ($self) = @_;
+    return $self->{objectid};
+}
+
+sub get_applicant {
+    my ($self) = @_;
+    return $self->{applicant};
+}
+
+sub get_facilitytype {
+    my ($self) = @_;
+    return $self->{facilitytype};
+}
+
+sub get_locationdescription {
+    my ($self) = @_;
+    return $self->{locationdescription};
 }
 
 sub get_address {
@@ -30,25 +63,45 @@ sub get_address {
     return $self->{address};
 }
 
-sub get_type {
+sub get_latitude {
     my ($self) = @_;
-    return $self->{type};
+    return $self->{latitude};
 }
 
-sub get_price {
+sub get_longitude {
     my ($self) = @_;
-    return $self->{price};
+    return $self->{longitude};
 }
 
-sub get_reviews {
+sub get_permit {
     my ($self) = @_;
-    return $self->{reviews};
+    return $self->{permit};
 }
 
-# Setter methods for updating object attributes
-sub set_name {
-    my ($self, $name) = @_;
-    $self->{name} = $name;
+sub get_status {
+    my ($self) = @_;
+    return $self->{status};
+}
+
+# Setter methods
+sub set_objectid {
+    my ($self, $objectid) = @_;
+    $self->{objectid} = $objectid;
+}
+
+sub set_applicant {
+    my ($self, $applicant) = @_;
+    $self->{applicant} = $applicant;
+}
+
+sub set_facilitytype {
+    my ($self, $facilitytype) = @_;
+    $self->{facilitytype} = $facilitytype;
+}
+
+sub set_locationdescription {
+    my ($self, $locationdescription) = @_;
+    $self->{locationdescription} = $locationdescription;
 }
 
 sub set_address {
@@ -56,19 +109,24 @@ sub set_address {
     $self->{address} = $address;
 }
 
-sub set_type {
-    my ($self, $type) = @_;
-    $self->{type} = $type;
+sub set_latitude {
+    my ($self, $latitude) = @_;
+    $self->{latitude} = $latitude;
 }
 
-sub set_price {
-    my ($self, $price) = @_;
-    $self->{price} = $price;
+sub set_longitude {
+    my ($self, $longitude) = @_;
+    $self->{longitude} = $longitude;
 }
 
-sub set_reviews {
-    my ($self, $reviews) = @_;
-    $self->{reviews} = $reviews;
+sub set_permit {
+    my ($self, $permit) = @_;
+    $self->{permit} = $permit;
+}
+
+sub set_status {
+    my ($self, $status) = @_;
+    $self->{status} = $status;
 }
 
 1;

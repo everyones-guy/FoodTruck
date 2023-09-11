@@ -9,7 +9,7 @@ sub new {
     my ($class) = @_;
 
     my $self = {
-        db_file => 'food_truck.db',
+        db_file => '../data/food_truck.db',
         dbh     => undef,  # Database handle
     };
 

@@ -3,16 +3,14 @@ use warnings;
 use lib '../lib';
 use FoodTruck;
 use FoodTruckDB;
-use JSON;           
+use JSON;
 use LWP::UserAgent;
 use DBI;
-use Data::Dumper;
 
-# Setup endpoint to grab json Data
+# Setup endpoint to grab JSON Data
 my $api_url = 'https://data.sfgov.org/resource/rqzj-sfat.json';
 
-
-# Create a User
+# Create a User Agent
 my $ua = LWP::UserAgent->new;
 
 # Hit API
@@ -22,35 +20,38 @@ my $response = $ua->get($api_url);
 if ($response->is_success) {
     my $json_data = $response->decoded_content();
 
-    # Grab the data and parse
+    # Parse the JSON data
     my $trucks = decode_json($json_data);
+
+    # Create a FoodTruckDB object to establish a database connection
+    my $db = FoodTruckDB->new;
 
     foreach my $truck_data (@$trucks) {
         my $truck = FoodTruck->new(%$truck_data);
 
-        # Test if we're displaying the correct data		
-		if( $truck->{'status'} =~ /approved/i){
-			print $truck->display_info();
-		}
-	}	
+        # Test if the truck has an approved status
+        if ($truck->get_status() && $truck->get_status() =~ /approved/i) {
+            print $truck->display_info();
+            
+            # Insert the FoodTruck object into the database
+            $db->insert_food_truck(
+                $truck->get_objectid(),
+                $truck->get_applicant(),
+                $truck->get_facilitytype(),
+                $truck->get_locationdescription(),
+                $truck->get_address(),
+                $truck->get_latitude(),
+                $truck->get_longitude(),
+                $truck->get_permit(),
+                $truck->get_status()
+            );
+        }
+    }
+
+    # Disconnect from the database
+    $db->DESTROY;
 } else {
     die "Failed to retrieve data from the API: " . $response->status_line;
 }
 
-my $db_file = 'food_truck.db';
-my $dbh = DBI->connect("dbi:SQLite:dbname=$db_file", "", "");
-
-
-=pod
-We have our data, now it is time to do something fun with it. 
-
-We can set up a randomizer and have it query the end user to see what their preferences are and suggest food trucks that they may like. 
-
-We could use the food trucks' locations along with the end user's geo tag and find something close. 
-
-If we're actively looking for food, then we should only be looking at food trucks with approved statuses.
-
-If we want to see someone that is up and coming then we weill need to look for pending.
-
-If we want to see what happened to that old food truck we loved so much and is nowhere to be found, we'll need to know status and actively look around for any news.
-=cut
+# Rest of your script remains the same
