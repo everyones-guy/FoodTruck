@@ -20,6 +20,10 @@ sub new {
         AutoCommit => 1,  # Enable auto-commit
     });
 
+    # Create a file handle for logging warnings
+    open(my $log_fh, '>>', 'warnings.log') or die "Cannot open warnings.log: $!";
+    $self->{log_fh} = $log_fh;
+
     bless($self, $class);
     return $self;
 }
@@ -78,13 +82,13 @@ SQL
             # Store the inserted objectid in the array
             push @inserted_ids, $objectid;
         } else {
-            warn "Skipping duplicate objectid: $objectid\n";
+            # Log duplicate objectid to the warnings.log file
+            print { $self->{log_fh} } "Skipping duplicate objectid: $objectid\n";
         }
     }
 
     return \@inserted_ids;  # Return a reference to the inserted objectids
 }
-
 
 # Retrieve a random food truck from the database
 sub get_random_food_truck {
@@ -125,6 +129,10 @@ sub DESTROY {
     if ($self->{dbh}) {
         $self->{dbh}->disconnect();
     }
+
+    # Close the log file handle
+    close($self->{log_fh});
+
     return;
 }
 

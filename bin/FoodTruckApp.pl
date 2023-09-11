@@ -24,7 +24,7 @@ if ($response->is_success) {
     my $trucks = decode_json($json_data);
 
     # Prompt the user to select a certified and licensed food truck
-    print "Would you like to select a random certified and licensed food truck to visit (Yes/No)? ";
+    print "Discover a random certified and licensed food truck near you (Yes/No)? ";
     my $user_input = <STDIN>;
     chomp $user_input;
  
@@ -45,9 +45,10 @@ if ($response->is_success) {
             my $truck = FoodTruck->new(%$food_truck);
         
             # Display the selected food truck
+            print "Great choice! Here's a delightful food truck near you:\n";
             print $truck->display_info();
         } else {
-            print "No certified and licensed food trucks found in the database.\n";
+             print "Oops! We couldn't find any certified and licensed food trucks nearby.\n";
         }
 
         # You can now use $inserted_ids_ref to query specific records if needed
@@ -57,8 +58,8 @@ if ($response->is_success) {
         # Disconnect from the database
         $db->DESTROY;
     } else {
-        print "You chose not to select a food truck.\n";
+        print "No problem! Feel free to explore food trucks whenever you're ready.\n";
     }
 } else {
-    die "Failed to retrieve data from the API: " . $response->status_line;
+     die "Sorry, we couldn't retrieve the latest food truck information at the moment. Please try again later.";
 }
